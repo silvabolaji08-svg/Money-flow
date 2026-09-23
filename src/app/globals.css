@@ -1,26 +1,537 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
+
+/* ------------------------------------------------------------------
+   MoneyFlow design tokens.
+   A restrained fintech palette: near-neutral surfaces, one brand accent
+   (jade), and dedicated semantic colours for financial state.
+------------------------------------------------------------------- */
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-sans);
   --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-sans);
+
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-chart-6: var(--chart-6);
+
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+
+  /* Financial semantics */
+  --color-positive: var(--positive);
+  --color-positive-foreground: var(--positive-foreground);
+  --color-positive-muted: var(--positive-muted);
+  --color-negative: var(--negative);
+  --color-negative-foreground: var(--negative-foreground);
+  --color-negative-muted: var(--negative-muted);
+  --color-savings: var(--savings);
+  --color-savings-muted: var(--savings-muted);
+  --color-warning: var(--warning);
+  --color-warning-muted: var(--warning-muted);
+  --color-brand: var(--brand);
+  --color-brand-soft: var(--brand-soft);
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+:root {
+  --radius: 0.75rem;
+
+  --background: oklch(0.985 0.002 265);
+  --foreground: oklch(0.205 0.014 265);
+
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.205 0.014 265);
+
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.205 0.014 265);
+
+  --primary: oklch(0.235 0.018 265);
+  --primary-foreground: oklch(0.985 0.002 265);
+
+  --secondary: oklch(0.965 0.004 265);
+  --secondary-foreground: oklch(0.285 0.016 265);
+
+  --muted: oklch(0.966 0.004 265);
+  --muted-foreground: oklch(0.525 0.014 265);
+
+  --accent: oklch(0.955 0.006 265);
+  --accent-foreground: oklch(0.255 0.016 265);
+
+  --destructive: oklch(0.58 0.2 25);
+
+  --border: oklch(0.917 0.005 265);
+  --input: oklch(0.917 0.005 265);
+  --ring: oklch(0.62 0.13 168);
+
+  --brand: oklch(0.6 0.125 168);
+  --brand-soft: oklch(0.95 0.03 168);
+
+  --positive: oklch(0.56 0.13 160);
+  --positive-foreground: oklch(0.99 0 0);
+  --positive-muted: oklch(0.955 0.03 160);
+
+  --negative: oklch(0.575 0.185 22);
+  --negative-foreground: oklch(0.99 0 0);
+  --negative-muted: oklch(0.96 0.025 22);
+
+  --savings: oklch(0.55 0.15 268);
+  --savings-muted: oklch(0.955 0.03 268);
+
+  --warning: oklch(0.7 0.145 72);
+  --warning-muted: oklch(0.965 0.04 80);
+
+  --chart-1: oklch(0.6 0.125 168);
+  --chart-2: oklch(0.55 0.15 268);
+  --chart-3: oklch(0.7 0.145 72);
+  --chart-4: oklch(0.6 0.16 340);
+  --chart-5: oklch(0.6 0.12 220);
+  --chart-6: oklch(0.63 0.13 120);
+
+  --sidebar: oklch(0.985 0.002 265);
+  --sidebar-foreground: oklch(0.205 0.014 265);
+  --sidebar-primary: oklch(0.235 0.018 265);
+  --sidebar-primary-foreground: oklch(0.985 0.002 265);
+  --sidebar-accent: oklch(0.955 0.006 265);
+  --sidebar-accent-foreground: oklch(0.235 0.018 265);
+  --sidebar-border: oklch(0.917 0.005 265);
+  --sidebar-ring: oklch(0.62 0.13 168);
+
+  --shadow-elevated: 0 1px 2px -1px oklch(0.2 0.02 265 / 0.07), 0 6px 20px -6px oklch(0.2 0.02 265 / 0.09);
+  --shadow-lifted: 0 2px 4px -2px oklch(0.2 0.02 265 / 0.1), 0 14px 34px -10px oklch(0.2 0.02 265 / 0.16);
+
+  /* ----------------------------------------------------------------------
+     Motion scale. One place decides how fast the whole product feels.
+     Mirrored in src/lib/motion.ts for the JS-driven animations.
+  ---------------------------------------------------------------------- */
+
+  /* Micro-interactions: hover, press, focus, toggles. */
+  --mf-duration-micro: 140ms;
+  /* Normal UI: dropdowns, popovers, list rows, progress. */
+  --mf-duration-ui: 220ms;
+  /* Larger content: page and panel transitions, modals. */
+  --mf-duration-content: 360ms;
+
+  /* Decelerating — things arriving on screen. */
+  --mf-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  /* Accelerating — things leaving. */
+  --mf-ease-in: cubic-bezier(0.4, 0, 1, 1);
+  /* Symmetric — things moving between two states. */
+  --mf-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  /* A touch of overshoot, used sparingly on success moments. */
+  --mf-ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+
+.dark {
+  --background: oklch(0.155 0.008 265);
+  --foreground: oklch(0.965 0.003 265);
+
+  --card: oklch(0.192 0.009 265);
+  --card-foreground: oklch(0.965 0.003 265);
+
+  --popover: oklch(0.205 0.01 265);
+  --popover-foreground: oklch(0.965 0.003 265);
+
+  --primary: oklch(0.955 0.003 265);
+  --primary-foreground: oklch(0.195 0.012 265);
+
+  --secondary: oklch(0.255 0.011 265);
+  --secondary-foreground: oklch(0.95 0.003 265);
+
+  --muted: oklch(0.245 0.011 265);
+  --muted-foreground: oklch(0.675 0.013 265);
+
+  --accent: oklch(0.268 0.012 265);
+  --accent-foreground: oklch(0.965 0.003 265);
+
+  --destructive: oklch(0.68 0.175 22);
+
+  --border: oklch(1 0 0 / 9%);
+  --input: oklch(1 0 0 / 13%);
+  --ring: oklch(0.72 0.12 168);
+
+  --brand: oklch(0.74 0.13 168);
+  --brand-soft: oklch(0.29 0.05 168);
+
+  --positive: oklch(0.74 0.14 162);
+  --positive-foreground: oklch(0.16 0.01 265);
+  --positive-muted: oklch(0.28 0.05 162);
+
+  --negative: oklch(0.7 0.16 20);
+  --negative-foreground: oklch(0.16 0.01 265);
+  --negative-muted: oklch(0.3 0.06 20);
+
+  --savings: oklch(0.71 0.14 268);
+  --savings-muted: oklch(0.29 0.06 268);
+
+  --warning: oklch(0.79 0.135 75);
+  --warning-muted: oklch(0.31 0.06 75);
+
+  --chart-1: oklch(0.74 0.13 168);
+  --chart-2: oklch(0.71 0.14 268);
+  --chart-3: oklch(0.79 0.135 75);
+  --chart-4: oklch(0.72 0.15 340);
+  --chart-5: oklch(0.72 0.12 220);
+  --chart-6: oklch(0.75 0.13 120);
+
+  --sidebar: oklch(0.175 0.009 265);
+  --sidebar-foreground: oklch(0.945 0.003 265);
+  --sidebar-primary: oklch(0.955 0.003 265);
+  --sidebar-primary-foreground: oklch(0.195 0.012 265);
+  --sidebar-accent: oklch(0.262 0.012 265);
+  --sidebar-accent-foreground: oklch(0.965 0.003 265);
+  --sidebar-border: oklch(1 0 0 / 8%);
+  --sidebar-ring: oklch(0.72 0.12 168);
+
+  --shadow-elevated: 0 1px 2px -1px oklch(0 0 0 / 0.4), 0 6px 20px -6px oklch(0 0 0 / 0.45);
+  --shadow-lifted: 0 2px 4px -2px oklch(0 0 0 / 0.45), 0 14px 34px -10px oklch(0 0 0 / 0.55);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  html {
+    @apply font-sans;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: var(--brand-soft);
+    color: var(--foreground);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+  /* Financial figures: tabular numerals so money columns line up. */
+  .tnum {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+  }
+
+  .surface {
+    @apply rounded-2xl border border-border bg-card;
+  }
+
+  .surface-hover {
+    transition:
+      transform var(--mf-duration-ui) var(--mf-ease-out),
+      box-shadow var(--mf-duration-ui) var(--mf-ease-out),
+      border-color var(--mf-duration-ui) var(--mf-ease-out);
+  }
+
+  .surface-hover:hover {
+    transform: translate3d(0, -2px, 0);
+    box-shadow: var(--shadow-elevated);
+  }
+
+  /* Settles back faster than it lifts, so a click feels responsive. */
+  .surface-hover:active {
+    transform: translate3d(0, 0, 0);
+    transition-duration: var(--mf-duration-micro);
+  }
+
+  /*
+   * A row in a list or table. Hover tints, keyboard focus gets a visible
+   * ring rather than only a tint, so the two are never confused.
+   */
+  .row-interactive {
+    transition:
+      background-color var(--mf-duration-micro) var(--mf-ease-out),
+      box-shadow var(--mf-duration-micro) var(--mf-ease-out);
+  }
+
+  .row-interactive:hover {
+    background-color: color-mix(in oklab, var(--muted) 60%, transparent);
+  }
+
+  .row-interactive:focus-within {
+    background-color: color-mix(in oklab, var(--muted) 60%, transparent);
+    box-shadow: inset 2px 0 0 0 var(--brand);
+  }
+
+  /* Soft directional light used on the dashboard hero. */
+  .hero-sheen {
+    background-image:
+      radial-gradient(120% 130% at 0% 0%, color-mix(in oklab, var(--brand) 14%, transparent) 0%, transparent 58%),
+      radial-gradient(95% 95% at 100% 0%, color-mix(in oklab, var(--savings) 12%, transparent) 0%, transparent 52%);
+  }
+
+  .grid-lines {
+    background-image:
+      linear-gradient(to right, color-mix(in oklab, var(--border) 65%, transparent) 1px, transparent 1px),
+      linear-gradient(to bottom, color-mix(in oklab, var(--border) 65%, transparent) 1px, transparent 1px);
+    background-size: 56px 56px;
+  }
+}
+
+@layer utilities {
+  /* --------------------------------------------------------------------
+     Keyframes. Every one of these moves only transform/opacity, except
+     the row collapse, which has to animate its own box to close the gap
+     it leaves behind.
+  -------------------------------------------------------------------- */
+
+  @keyframes rise-in {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 8px, 0);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  /* A list row arriving: shorter travel than a card, so lists stay calm. */
+  @keyframes row-enter {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 6px, 0);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  /* A table row leaving. Table rows cannot animate their own height, so
+     they slide and fade instead of collapsing. */
+  @keyframes row-exit {
+    from {
+      opacity: 1;
+      transform: none;
+    }
+    to {
+      opacity: 0;
+      transform: translate3d(-10px, 0, 0);
+    }
+  }
+
+  /* One-shot tint behind a value that has just changed. */
+  @keyframes value-flash {
+    0% {
+      background-color: transparent;
+    }
+    25% {
+      background-color: color-mix(in oklab, var(--brand) 16%, transparent);
+    }
+    100% {
+      background-color: transparent;
+    }
+  }
+
+  /* Attention ring for a completed goal or a breached budget. Finite by
+     design — nothing in a finance product should pulse forever. */
+  @keyframes ring-pulse {
+    0% {
+      box-shadow: 0 0 0 0 var(--ring-pulse-color, color-mix(in oklab, var(--positive) 45%, transparent));
+    }
+    70% {
+      box-shadow: 0 0 0 10px transparent;
+    }
+    100% {
+      box-shadow: 0 0 0 0 transparent;
+    }
+  }
+
+  @keyframes soft-pulse {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.55;
+    }
+  }
+
+  @keyframes pop-in {
+    from {
+      opacity: 0;
+      transform: scale(0.72);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes shimmer {
+    from {
+      transform: translate3d(-100%, 0, 0);
+    }
+    to {
+      transform: translate3d(100%, 0, 0);
+    }
+  }
+
+  /* --------------------------------------------------------------------
+     Utilities
+  -------------------------------------------------------------------- */
+
+  .animate-rise {
+    animation: rise-in var(--mf-duration-content) var(--mf-ease-out) both;
+  }
+
+  .animate-fade {
+    animation: fade-in var(--mf-duration-ui) var(--mf-ease-out) both;
+  }
+
+  .animate-row-enter {
+    animation: row-enter var(--mf-duration-ui) var(--mf-ease-out) both;
+  }
+
+  .animate-row-exit {
+    animation: row-exit 180ms var(--mf-ease-in) both;
+  }
+
+  .animate-value-flash {
+    animation: value-flash 1100ms var(--mf-ease-out) both;
+  }
+
+  .animate-ring-pulse {
+    animation: ring-pulse 1400ms var(--mf-ease-out) 2;
+  }
+
+  .animate-soft-pulse {
+    animation: soft-pulse 2200ms var(--mf-ease-in-out) infinite;
+  }
+
+  .animate-pop-in {
+    animation: pop-in var(--mf-duration-ui) var(--mf-ease-spring) both;
+  }
+
+  /*
+   * Staggered entrance for a group of cards. The delay is set per child in
+   * CSS rather than per element in JS, so the markup stays server-rendered.
+   * Capped at 8 so a long list never waits on a long tail of delays.
+   */
+  .stagger > * {
+    animation: rise-in var(--mf-duration-content) var(--mf-ease-out) both;
+  }
+
+  .stagger > *:nth-child(1) { animation-delay: 0ms; }
+  .stagger > *:nth-child(2) { animation-delay: 40ms; }
+  .stagger > *:nth-child(3) { animation-delay: 80ms; }
+  .stagger > *:nth-child(4) { animation-delay: 120ms; }
+  .stagger > *:nth-child(5) { animation-delay: 160ms; }
+  .stagger > *:nth-child(6) { animation-delay: 200ms; }
+  .stagger > *:nth-child(7) { animation-delay: 240ms; }
+  .stagger > *:nth-child(n + 8) { animation-delay: 280ms; }
+
+  /* Collapses a block-level row to nothing. Used by the mobile
+     transaction list, where each row is its own box. */
+  .row-collapse {
+    display: grid;
+    grid-template-rows: 1fr;
+    opacity: 1;
+    transition:
+      grid-template-rows var(--mf-duration-ui) var(--mf-ease-in),
+      opacity 140ms var(--mf-ease-in);
+  }
+
+  .row-collapse > * {
+    overflow: hidden;
+    min-height: 0;
+  }
+
+  .row-collapse[data-removing="true"] {
+    grid-template-rows: 0fr;
+    opacity: 0;
+  }
+
+  .scrollbar-slim {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+}
+
+/* ------------------------------------------------------------------
+   Reduced motion.
+
+   Everything above is decoration: no information is conveyed by movement
+   alone, so it can all be switched off. Elements still arrive at their
+   final opacity and position, progress bars still show the right width,
+   and numbers still show the right figure — they simply do not travel.
+
+   The JS-driven animations (counting numbers, progress fills, row
+   removal) check the same preference in `useReducedMotion`, so they jump
+   straight to their final state rather than animating over zero seconds.
+------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .surface-hover:hover {
+    transform: none;
+  }
+
+  .stagger > * {
+    animation-delay: 0ms !important;
+  }
 }

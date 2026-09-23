@@ -1,0 +1,183 @@
+// MoneyFlow — Prisma schema
+// PostgreSQL. All monetary values use DECIMAL(18,2); never floats.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Currency {
+  NGN
+  USD
+  EUR
+  GBP
+}
+
+enum AccountType {
+  CASH
+  BANK
+  SAVINGS
+  INVESTMENT
+  WALLET
+  CREDIT
+}
+
+enum CategoryKind {
+  INCOME
+  EXPENSE
+}
+
+enum TransactionType {
+  INCOME
+  EXPENSE
+}
+
+model User {
+  id            String   @id @default(cuid())
+  name          String
+  email         String   @unique
+  passwordHash  String
+  image         String?
+  currency      Currency @default(NGN)
+  theme         String   @default("system")
+  budgetAlerts  Boolean  @default(true)
+  savingsAlerts Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  accounts     Account[]
+  categories   Category[]
+  transactions Transaction[]
+  budgets      Budget[]
+  savingsGoals SavingsGoal[]
+
+  @@map("users")
+}
+
+/// A financial account owned by a user (cash, bank, wallet...).
+model Account {
+  id             String      @id @default(cuid())
+  userId         String
+  name           String
+  type           AccountType @default(BANK)
+  currency       Currency    @default(NGN)
+  /// Balance the account started with, before any tracked transaction.
+  openingBalance Decimal     @default(0) @db.Decimal(18, 2)
+  description    String?
+  color          String?
+  archived       Boolean     @default(false)
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+
+  @@unique([userId, name])
+  @@index([userId])
+  @@index([userId, archived])
+  @@map("accounts")
+}
+
+model Category {
+  id        String       @id @default(cuid())
+  userId    String
+  name      String
+  kind      CategoryKind
+  /// Lucide icon name rendered by the icon registry.
+  icon      String       @default("Circle")
+  color     String       @default("#64748b")
+  isDefault Boolean      @default(false)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+  budgets      Budget[]
+
+  @@unique([userId, name, kind])
+  @@index([userId, kind])
+  @@map("categories")
+}
+
+model Transaction {
+  id          String          @id @default(cuid())
+  userId      String
+  accountId   String
+  categoryId  String
+  type        TransactionType
+  amount      Decimal         @db.Decimal(18, 2)
+  description String
+  notes       String?
+  date        DateTime
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  account  Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+
+  @@index([userId, date(sort: Desc)])
+  @@index([userId, type, date])
+  @@index([userId, accountId, date])
+  @@index([userId, categoryId, date])
+  @@map("transactions")
+}
+
+model Budget {
+  id         String   @id @default(cuid())
+  userId     String
+  categoryId String
+  amount     Decimal  @db.Decimal(18, 2)
+  /// Always normalised to the first day of the budget month (UTC).
+  month      DateTime @db.Date
+  note       String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, categoryId, month])
+  @@index([userId, month])
+  @@map("budgets")
+}
+
+model SavingsGoal {
+  id            String    @id @default(cuid())
+  userId        String
+  name          String
+  targetAmount  Decimal   @db.Decimal(18, 2)
+  currentAmount Decimal   @default(0) @db.Decimal(18, 2)
+  targetDate    DateTime? @db.Date
+  description   String?
+  color         String?
+  completedAt   DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  user          User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  contributions GoalContribution[]
+
+  @@unique([userId, name])
+  @@index([userId])
+  @@map("savings_goals")
+}
+
+/// Positive amount = money added to the goal, negative = money withdrawn.
+model GoalContribution {
+  id         String   @id @default(cuid())
+  goalId     String
+  amount     Decimal  @db.Decimal(18, 2)
+  note       String?
+  occurredAt DateTime @default(now())
+  createdAt  DateTime @default(now())
+
+  goal SavingsGoal @relation(fields: [goalId], references: [id], onDelete: Cascade)
+
+  @@index([goalId, occurredAt(sort: Desc)])
+  @@map("goal_contributions")
+}
